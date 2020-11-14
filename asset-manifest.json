@@ -1,23 +1,26 @@
 {
   "files": {
-    "main.css": "/foto-map/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/foto-map/static/js/main.66b3d266.chunk.js",
-    "main.js.map": "/foto-map/static/js/main.66b3d266.chunk.js.map",
-    "runtime-main.js": "/foto-map/static/js/runtime-main.a21785c2.js",
-    "runtime-main.js.map": "/foto-map/static/js/runtime-main.a21785c2.js.map",
-    "static/js/2.3b04829e.chunk.js": "/foto-map/static/js/2.3b04829e.chunk.js",
-    "static/js/2.3b04829e.chunk.js.map": "/foto-map/static/js/2.3b04829e.chunk.js.map",
-    "static/js/3.bb7aeaf5.chunk.js": "/foto-map/static/js/3.bb7aeaf5.chunk.js",
-    "static/js/3.bb7aeaf5.chunk.js.map": "/foto-map/static/js/3.bb7aeaf5.chunk.js.map",
+    "main.css": "/foto-map/static/css/main.7b2b8544.chunk.css",
+    "main.js": "/foto-map/static/js/main.efa6837c.chunk.js",
+    "main.js.map": "/foto-map/static/js/main.efa6837c.chunk.js.map",
+    "runtime-main.js": "/foto-map/static/js/runtime-main.13fb0d14.js",
+    "runtime-main.js.map": "/foto-map/static/js/runtime-main.13fb0d14.js.map",
+    "static/css/2.20aa2d7b.chunk.css": "/foto-map/static/css/2.20aa2d7b.chunk.css",
+    "static/js/2.361b1d95.chunk.js": "/foto-map/static/js/2.361b1d95.chunk.js",
+    "static/js/2.361b1d95.chunk.js.map": "/foto-map/static/js/2.361b1d95.chunk.js.map",
+    "static/js/3.c114462e.chunk.js": "/foto-map/static/js/3.c114462e.chunk.js",
+    "static/js/3.c114462e.chunk.js.map": "/foto-map/static/js/3.c114462e.chunk.js.map",
     "index.html": "/foto-map/index.html",
-    "static/css/main.8c8b27cf.chunk.css.map": "/foto-map/static/css/main.8c8b27cf.chunk.css.map",
-    "static/js/2.3b04829e.chunk.js.LICENSE.txt": "/foto-map/static/js/2.3b04829e.chunk.js.LICENSE.txt",
+    "static/css/2.20aa2d7b.chunk.css.map": "/foto-map/static/css/2.20aa2d7b.chunk.css.map",
+    "static/css/main.7b2b8544.chunk.css.map": "/foto-map/static/css/main.7b2b8544.chunk.css.map",
+    "static/js/2.361b1d95.chunk.js.LICENSE.txt": "/foto-map/static/js/2.361b1d95.chunk.js.LICENSE.txt",
     "static/media/logo.103b5fa1.svg": "/foto-map/static/media/logo.103b5fa1.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.a21785c2.js",
-    "static/js/2.3b04829e.chunk.js",
-    "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.66b3d266.chunk.js"
+    "static/js/runtime-main.13fb0d14.js",
+    "static/css/2.20aa2d7b.chunk.css",
+    "static/js/2.361b1d95.chunk.js",
+    "static/css/main.7b2b8544.chunk.css",
+    "static/js/main.efa6837c.chunk.js"
   ]
 }
