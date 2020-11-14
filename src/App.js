@@ -20,7 +20,7 @@ function App() {
 
     } else {
         addressContent = <div>
-            Please provide your address...
+            Proszę podaj swój adres...
         </div>
     }
 
