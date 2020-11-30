@@ -5,49 +5,98 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {useRef, useState, Component, createRef} from "react";
 import {Chart} from "chart.js";
 
-class BarChart extends Component {
+class LineChart extends Component {
     constructor(props) {
         super(props);
         this.canvasRef = createRef();
     }
 
     componentDidUpdate() {
-        this.myChart.data.labels = this.props.data.map(d => d.label);
-        this.myChart.data.datasets[0].data = this.props.data.map(d => d.value);
+        this.myChart.data.datasets[0].data = this.props.data;
         this.myChart.update();
     }
 
     componentDidMount() {
         this.myChart = new Chart(this.canvasRef.current, {
-            type: 'bar',
+            type: 'line',
             options: {
-                maintainAspectRatio: false,
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
                 scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                min: 0,
-                                max: 100
-                            }
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Miesiąc'
+                        },
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'kWh/dzień'
+                        },
+                        ticks: {
+                            beginAtZero: true
                         }
-                    ]
+                    }],
                 }
             },
             data: {
-                labels: this.props.data.map(d => d.label),
+                labels: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
                 datasets: [{
+                    cubicInterpolationMode: 'default',
+                    lineTension: 0.3,
                     label: this.props.title,
-                    data: this.props.data.map(d => d.value),
-                    backgroundColor: this.props.color
-                }]
-            }
+                    data: this.props.data,
+                    borderColor: "#ffd300",
+                    backgroundColor: "transparent",
+                }],
+            },
         });
     }
 
     render() {
         return (
-            <canvas ref={this.canvasRef} />
+            <canvas ref={this.canvasRef}/>
         );
+    }
+}
+
+function tiltCoeff(x) {
+    if (x > 90 || x < 0) {
+        return 0
+    }
+    return (-1 * (Math.pow(x-45, 2)/2025)) + 1
+}
+
+function areaCoeff(x) {
+    if (x < 0) {
+        return 0
+    }
+    return x/32
+}
+
+function priceCoeff(x) {
+    return x/0.35
+}
+
+function directionCoeff(x) {
+    if (x === "Północ") {
+        return 0.3
+    } else if (x === "Południe") {
+        return 1.0
+    } else if (x === "Zachód") {
+        return 0.8
+    } else {
+        return 0.7
     }
 }
 
@@ -56,9 +105,16 @@ function App() {
         "price": "",
         "break-even-point": "",
         "savings": "",
+        "available": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     });
 
     const [direction, setDirection] = useState("Kierunek Dachu")
+
+    var tilt = useRef(35);
+    var area = useRef(32);
+    var usageSummer = useRef(8);
+    var usageWinter = useRef(14);
+    var price = useRef(0.35);
 
     return (
         <div className="App">
@@ -88,7 +144,8 @@ function App() {
                                             placeholder="35"
                                             aria-label="Nachylenie Dachu (w stopniach)"
                                             aria-describedby="basic-addon2"
-                                            id="addressInput"
+                                            id="tilt-input"
+                                            ref={tilt}
                                         />
                                         <InputGroup.Append>
                                             <InputGroup.Text>stopni</InputGroup.Text>
@@ -102,7 +159,8 @@ function App() {
                                             placeholder="32"
                                             aria-label="Powierzchnia dachu"
                                             aria-describedby="basic-addon2"
-                                            id="addressInput"
+                                            id="area-input"
+                                            ref={area}
                                         />
                                         <InputGroup.Append>
                                             <InputGroup.Text>m^2</InputGroup.Text>
@@ -115,10 +173,14 @@ function App() {
                                             </Dropdown.Toggle>
 
                                             <Dropdown.Menu>
-                                                <Dropdown.Item as="button" onClick={() => setDirection("Północ")}>Północ</Dropdown.Item>
-                                                <Dropdown.Item as="button" onClick={() => setDirection("Południe")}>Południe</Dropdown.Item>
-                                                <Dropdown.Item as="button" onClick={() => setDirection("Zachód")}>Zachód</Dropdown.Item>
-                                                <Dropdown.Item as="button" onClick={() => setDirection("Wschód")}>Wschód</Dropdown.Item>
+                                                <Dropdown.Item as="button"
+                                                               onClick={() => setDirection("Północ")}>Północ</Dropdown.Item>
+                                                <Dropdown.Item as="button"
+                                                               onClick={() => setDirection("Południe")}>Południe</Dropdown.Item>
+                                                <Dropdown.Item as="button"
+                                                               onClick={() => setDirection("Zachód")}>Zachód</Dropdown.Item>
+                                                <Dropdown.Item as="button"
+                                                               onClick={() => setDirection("Wschód")}>Wschód</Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </InputGroup>
@@ -130,7 +192,8 @@ function App() {
                                             placeholder="8"
                                             aria-label="Zużycie prądu latem"
                                             aria-describedby="basic-addon2"
-                                            id="addressInput"
+                                            id="usageSummer-input"
+                                            ref={usageSummer}
                                         />
                                         <InputGroup.Append>
                                             <InputGroup.Text>kWh/dzień</InputGroup.Text>
@@ -144,7 +207,8 @@ function App() {
                                             placeholder="14"
                                             aria-label="Zużycie prądu zimą"
                                             aria-describedby="basic-addon2"
-                                            id="addressInput"
+                                            id="usageWinter-input"
+                                            ref={usageWinter}
                                         />
                                         <InputGroup.Append>
                                             <InputGroup.Text>kWh/dzień</InputGroup.Text>
@@ -158,7 +222,8 @@ function App() {
                                             placeholder="0.35"
                                             aria-label="0.35"
                                             aria-describedby="basic-addon2"
-                                            id="addressInput"
+                                            id="cost-input"
+                                            ref={price}
                                         />
                                         <InputGroup.Append>
                                             <InputGroup.Text>zł/kWh</InputGroup.Text>
@@ -167,9 +232,10 @@ function App() {
                                             <Button variant="outline-primary" onClick={
                                                 (click) => {
                                                     setOutput({
-                                                        "price": "60000",
-                                                        "break-even-point": "15",
-                                                        "savings": "30000",
+                                                        "price": Math.round(60000*areaCoeff(area.current.value)),
+                                                        "break-even-point": Math.round(15/priceCoeff(price.current.value)),
+                                                        "savings": Math.round(30000*tiltCoeff(tilt.current.value)/areaCoeff(area.current.value)*directionCoeff(direction)*priceCoeff(price.current.value)),
+                                                        "available": [15, 15, 18, 20, 22, 24, 27, 27, 23, 19, 18, 17].map((x) => Math.round(x*tiltCoeff(tilt.current.value)*areaCoeff(area.current.value)*directionCoeff(direction))),
                                                     })
                                                 }
                                             }>Oblicz</Button>
@@ -188,7 +254,7 @@ function App() {
                                             <InputGroup.Text>Orientacyjny koszt</InputGroup.Text>
                                         </InputGroup.Prepend>
                                         <FormControl
-                                            value={output["price"] == null ? "" : output["price"]}
+                                            value={output["price"]}
                                             placeholder=""
                                             aria-label="Orientacyjny koszt"
                                             aria-describedby="basic-addon2"
@@ -203,7 +269,7 @@ function App() {
                                             <InputGroup.Text>Break-Even Point</InputGroup.Text>
                                         </InputGroup.Prepend>
                                         <FormControl
-                                            value={output["break-even-point"] == null ? "" : output["break-even-point"]}
+                                            value={output["break-even-point"]}
                                             placeholder=""
                                             aria-label="Break-Even Point"
                                             aria-describedby="basic-addon2"
@@ -218,7 +284,7 @@ function App() {
                                             <InputGroup.Text>Oszczędność po 20 latach</InputGroup.Text>
                                         </InputGroup.Prepend>
                                         <FormControl
-                                            value={output["savings"] == null ? "" : output["savings"]}
+                                            value={output["savings"]}
                                             placeholder=""
                                             aria-label="Oszczędność po 20 latach"
                                             aria-describedby="basic-addon2"
@@ -228,21 +294,12 @@ function App() {
                                             <InputGroup.Text>zł</InputGroup.Text>
                                         </InputGroup.Append>
                                     </InputGroup>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Prepend>
-                                            <InputGroup.Text>Średnia ilość dostępnej energii</InputGroup.Text>
-                                        </InputGroup.Prepend>
-                                        <FormControl
-                                            placeholder=""
-                                            aria-label="Ilość średnio dostępnej energii"
-                                            aria-describedby="basic-addon2"
-                                            id="addressInput"
-                                        />
-                                        <InputGroup.Append>
-                                            <InputGroup.Text>m^2</InputGroup.Text>
-                                        </InputGroup.Append>
-                                    </InputGroup>
-                                    <BarChart/>
+                                    <div>
+                                        <LineChart
+                                            data={output["available"]}
+                                            title="Średnia ilość dostępnej energii"
+                                            color="red"/>
+                                    </div>
                                 </div>
                             </Card.Body>
                         </Card>
