@@ -44,7 +44,9 @@ class LineChart extends Component {
                             labelString: 'kWh/dzień'
                         },
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            count: 3,
+                            maxTicksLimit: 8,
                         }
                     }],
                 }
